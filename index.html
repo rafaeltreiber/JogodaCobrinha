@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas id="stage" width="400" height="400"></canvas>
+    <script type="text/javascript">
+      window.onload = function () {
+        const stage = document.getElementById("stage");
+        let context = stage.getContext("2d");
+
+        document.addEventListener("keydown", keyPush);
+
+        // A cada 60 milisegundos atualiza o jogo
+        setInterval(game, 60);
+
+        // A quatidade de casas que a cobrinha vai andar a cada vez que a função game() for chamada
+        const velocity = 1;
+        // inicialmente ela está parada
+        let xVelocity = yVelocity = 0;
+        // Saída na posição (10,15)
+        let xPosition = 10;
+        let yPosition = 15;
+        // A quantidade de pixels que cada quadrado tem. Nesse caso é 20x20
+        const squarePixels = 20;
+        // A quantidade de quadrados totais que temos. Nesse caso são 20x20 (já que a tela tem 400px x 400px)
+        const totalSquares = 20;
+        // A comida sai na posição (15,15)
+        let xFood = yFood = 15;
+
+        let trail = [];
+        let tail = 5;
+
+        function game() {
+          // A posição da cabeça da cobra é incrementada de acordo com a sua velocidade
+          xPosition += xVelocity;
+          yPosition += yVelocity;
+
+          // Se a cobra chegar no limite esquerdo da tela, ela reaparece na direita
+          if (xPosition < 0) xPosition = totalSquares - 1;
+          // Se a cobra chegar no limite direito da tela, ela reaparece na esquerda
+          if (xPosition > totalSquares - 1) xPosition = 0;
+          // Se a cobra chegar no limite superior da tela, ela reaparece embaixo
+          if (yPosition < 0) yPosition = totalSquares - 1;
+          // Se a cobra chegar embaixo da tela, ela reaparece em cima
+          if (yPosition > totalSquares - 1) yPosition = 0;
+
+          // preenchimento do fundo da tela
+          context.fillStyle = "black";
+          context.fillRect(0, 0, stage.width, stage.height);
+
+          // preenchimento da comida
+          context.fillStyle = "red";
+          context.fillRect(
+            xFood * squarePixels,
+            yFood * squarePixels,
+            squarePixels,
+            squarePixels
+          );
+
+          // preenchimento da cobra
+          context.fillStyle = "gray";
+          for (let i = 0; i < trail.length; i++) {
+            context.fillRect(
+              trail[i].x * squarePixels,
+              trail[i].y * squarePixels,
+              squarePixels - 1,
+              squarePixels - 1
+            );
+
+            // se a cabeça estiver batendo em alguma parte do corpo
+            if (trail[i].x == xPosition && trail[i].y == yPosition) {
+              // Apenas paramos a cobra, sem mensagem
+              xVelocity = yVelocity = 0;
+              tail = 5;
+            }
+          }
+
+          // se a cobra não bateu nela mesma, continuamos a movendo
+          trail.push({ x: xPosition, y: yPosition });
+          // agora precisamos apagar o último bloco. Criar um novo para mover a cobra pra frente e apagar
+          // o último.
+
+          while (trail.length > tail) {
+            trail.shift();
+          }
+
+          // Se comer a comida, ela deve ser reposicionada para um local aleatório do mapa
+          if (xFood == xPosition && yFood == yPosition) {
+            tail++;
+            xFood = Math.floor(Math.random() * totalSquares);
+            yFood = Math.floor(Math.random() * totalSquares);
+          }
+        }
+
+        function keyPush(event) {
+          switch (event.keyCode) {
+            case 37: // Tecla da esquerda
+              xVelocity = -velocity;
+              yVelocity = 0;
+              break;
+            case 38: // Tecla de cima
+              xVelocity = 0;
+              yVelocity = -velocity;
+              break;
+            case 39: // Tecla da direita
+              xVelocity = velocity;
+              yVelocity = 0;
+              break;
+            case 40: // Tecla de baixo
+              xVelocity = 0;
+              yVelocity = velocity;
+              break;
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
