@@ -20,7 +20,7 @@
         // A quatidade de casas que a cobrinha vai andar a cada vez que a função game() for chamada
         const velocity = 1;
         // inicialmente ela está parada
-        let xVelocity = yVelocity = 0;
+        let xVelocity = (yVelocity = 0);
         // Saída na posição (10,15)
         let xPosition = 10;
         let yPosition = 15;
@@ -29,7 +29,9 @@
         // A quantidade de quadrados totais que temos. Nesse caso são 20x20 (já que a tela tem 400px x 400px)
         const totalSquares = 20;
         // A comida sai na posição (15,15)
-        let xFood = yFood = 15;
+        let xFood = (yFood = 15);
+        // A direção do movimento
+        let direcao = "Nenhuma";
 
         let trail = [];
         let tail = 5;
@@ -99,20 +101,28 @@
         function keyPush(event) {
           switch (event.keyCode) {
             case 37: // Tecla da esquerda
+              if (direcao === "Direita") break;
               xVelocity = -velocity;
               yVelocity = 0;
+              direcao = "Esquerda";
               break;
             case 38: // Tecla de cima
+              if (direcao === "Baixo") break;
               xVelocity = 0;
               yVelocity = -velocity;
+              direcao = "Cima";
               break;
             case 39: // Tecla da direita
+              if (direcao === "Esquerda") break;
               xVelocity = velocity;
               yVelocity = 0;
+              direcao = "Direita";
               break;
             case 40: // Tecla de baixo
+              if (direcao === "Cima") break;
               xVelocity = 0;
               yVelocity = velocity;
+              direcao = "Baixo";
               break;
           }
         }
